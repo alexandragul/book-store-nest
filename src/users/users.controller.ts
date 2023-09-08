@@ -5,13 +5,14 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { AddRoleDto } from 'src/users/dto/add-role.dto';
+import { ValidationPipe } from 'src/pipes/validation.pipe';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
-  create(@Body() userDto: CreateUserDto) {
+  create(@Body(new ValidationPipe()) userDto: CreateUserDto) {
     return this.usersService.createUser(userDto);
   }
 
@@ -27,7 +28,7 @@ export class UsersController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @Post('/role')
-  addRole(@Body() dto: AddRoleDto) {
+  addRole(@Body(new ValidationPipe()) dto: AddRoleDto) {
     return this.usersService.addRole(dto);
   }
 }
