@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   UploadedFile,
@@ -23,6 +24,11 @@ export class AuthorsController {
   @Post()
   createAuthor(@Body() authorDto: CreateAuthorDto) {
     return this.authorsService.createAuthor(authorDto);
+  }
+
+  @Get()
+  getAuthors() {
+    return this.authorsService.getAuthors();
   }
 
   @UseGuards(RolesGuard)

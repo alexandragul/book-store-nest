@@ -31,4 +31,9 @@ export class AuthorsService {
 
     return this.booksService.getBookById(book.id);
   }
+
+  async getAuthors() {
+    const authors = await this.authorRepository.findAll({ include: { all: true } });
+    return authors;
+  }
 }
