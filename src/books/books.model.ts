@@ -1,8 +1,8 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { Author } from 'src/authors/authors.model';
 
 interface BookCreationAttrs {
   title: string;
-  author: string;
   image: string;
 }
 
@@ -14,8 +14,12 @@ export class Book extends Model<Book, BookCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   title: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  author: string;
+  @ForeignKey(() => Author)
+  @Column({ type: DataType.INTEGER })
+  authorId: number;
+
+  @BelongsTo(() => Author)
+  author: Author;
 
   @Column({ type: DataType.STRING })
   image: string;

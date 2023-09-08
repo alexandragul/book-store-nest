@@ -9,5 +9,6 @@ import { Book } from 'src/books/books.model';
   controllers: [BooksController],
   providers: [BooksService],
   imports: [SequelizeModule.forFeature([Book]), FilesModule],
+  exports: [BooksService],
 })
 export class BooksModule {}

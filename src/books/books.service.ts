@@ -16,4 +16,9 @@ export class BooksService {
     const book = await this.bookRepository.create({ ...dto, image: fileName });
     return book;
   }
+
+  async getBookById(bookId: number) {
+    const book = await this.bookRepository.findByPk(bookId, { include: { all: true } });
+    return book;
+  }
 }
