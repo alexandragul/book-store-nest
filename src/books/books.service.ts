@@ -11,14 +11,27 @@ export class BooksService {
     private filesService: FilesService,
   ) {}
 
+  async getBooks() {
+    const books = await this.bookRepository.findAll();
+    return books;
+  }
+
   async createBook(dto: CreateBookDto, image: any) {
-    const fileName = await this.filesService.createFile(image);
-    const book = await this.bookRepository.create({ ...dto, image: fileName });
+    let fileName;
+    if (image) {
+      await this.filesService.createFile(image);
+    }
+    const book = await this.bookRepository.create({ ...dto, ...(fileName && { image: fileName }) });
     return book;
   }
 
   async getBookById(bookId: number) {
     const book = await this.bookRepository.findByPk(bookId, { include: { all: true } });
     return book;
+  }
+
+  async deleteBookById(bookId: number) {
+    const book = await this.bookRepository.findByPk(bookId);
+    await book.destroy();
   }
 }
