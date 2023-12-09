@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { InjectModel } from '@nestjs/sequelize';
+import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Book } from 'src/books/books.model';
 import { FilesService } from 'src/files/files.service';
 
@@ -12,14 +12,14 @@ export class BooksService {
   ) {}
 
   async getBooks() {
-    const books = await this.bookRepository.findAll();
+    const books = await this.bookRepository.findAll({ include: { all: true } });
     return books;
   }
 
   async createBook(dto: CreateBookDto, image: any) {
     let fileName;
     if (image) {
-      await this.filesService.createFile(image);
+      fileName = await this.filesService.createFile(image);
     }
     const book = await this.bookRepository.create({ ...dto, ...(fileName && { image: fileName }) });
     return book;
