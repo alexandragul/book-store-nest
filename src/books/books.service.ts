@@ -4,12 +4,14 @@ import { omitBy, isNil } from 'lodash';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Book } from 'src/books/books.model';
 import { FilesService } from 'src/files/files.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class BooksService {
   constructor(
     @InjectModel(Book) private bookRepository: typeof Book,
     private filesService: FilesService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async getBooks() {
@@ -18,11 +20,14 @@ export class BooksService {
   }
 
   async createBook(dto: CreateBookDto, image: any) {
-    let fileName;
+    let cloudinaryImage;
     if (image) {
-      fileName = await this.filesService.createFile(image);
+      cloudinaryImage = await this.cloudinaryService.uploadImage(image);
     }
-    const book = await this.bookRepository.create({ ...dto, ...(fileName && { image: fileName }) });
+    const book = await this.bookRepository.create({
+      ...dto,
+      ...(cloudinaryImage && { image: cloudinaryImage.url }),
+    });
     return book;
   }
 
@@ -33,11 +38,11 @@ export class BooksService {
 
   async updateBookById(bookId: number, dto: CreateBookDto, image: any) {
     const book = await this.bookRepository.findByPk(bookId, { include: { all: true } });
-    let fileName;
+    let cloudinaryImage;
     if (image) {
-      fileName = await this.filesService.createFile(image);
+      cloudinaryImage = await this.cloudinaryService.uploadImage(image);
     }
-    book.set(omitBy({ image: fileName, title: dto.title }, isNil));
+    book.set(omitBy({ image: cloudinaryImage.url, title: dto.title }, isNil));
     await book.save();
     return book;
   }

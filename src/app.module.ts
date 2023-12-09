@@ -12,6 +12,7 @@ import { BooksModule } from './books/books.module';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuthorsModule } from './authors/authors.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   controllers: [],
@@ -39,6 +40,7 @@ import { AuthorsModule } from './authors/authors.module';
     BooksModule,
     FilesModule,
     AuthorsModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}
