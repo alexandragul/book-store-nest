@@ -21,7 +21,7 @@ import { AuthorsModule } from './authors/authors.module';
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, 'static'),
+      rootPath: path.resolve(__dirname, '..', 'static'),
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
