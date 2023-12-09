@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { omitBy, isNil } from 'lodash';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Book } from 'src/books/books.model';
 import { FilesService } from 'src/files/files.service';
@@ -27,6 +28,17 @@ export class BooksService {
 
   async getBookById(bookId: number) {
     const book = await this.bookRepository.findByPk(bookId, { include: { all: true } });
+    return book;
+  }
+
+  async updateBookById(bookId: number, dto: CreateBookDto, image: any) {
+    const book = await this.bookRepository.findByPk(bookId, { include: { all: true } });
+    let fileName;
+    if (image) {
+      fileName = await this.filesService.createFile(image);
+    }
+    book.set(omitBy({ image: fileName, title: dto.title }, isNil));
+    await book.save();
     return book;
   }
 

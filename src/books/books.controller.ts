@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseGuards,
@@ -29,6 +30,14 @@ export class BooksController {
   @UseInterceptors(FileInterceptor('image'))
   createBook(@Body() dto: CreateBookDto, @UploadedFile() image) {
     return this.booksService.createBook(dto, image);
+  }
+
+  @Patch(':bookId')
+  @UseInterceptors(FileInterceptor('image'))
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  updateBook(@Param('bookId') bookId: string, @Body() dto: CreateBookDto, @UploadedFile() image) {
+    return this.booksService.updateBookById(Number(bookId), dto, image);
   }
 
   @UseGuards(JwtAuthGuard)
