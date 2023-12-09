@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
+import { chain } from 'lodash';
 import toStream = require('buffer-to-stream');
 
 @Injectable()
@@ -15,5 +16,15 @@ export class CloudinaryService {
 
       toStream(file.buffer).pipe(upload);
     });
+  }
+
+  async destroyImage(imageSrc: string) {
+    const publicId = chain(imageSrc).split('/').last().split('.').first().value();
+
+    try {
+      await v2.uploader.destroy(publicId);
+    } catch (e) {
+      throw new HttpException('Destroy image error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

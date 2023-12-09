@@ -38,12 +38,18 @@ export class BooksService {
 
   async updateBookById(bookId: number, dto: CreateBookDto, image: any) {
     const book = await this.bookRepository.findByPk(bookId, { include: { all: true } });
-    let cloudinaryImage;
-    if (image) {
-      cloudinaryImage = await this.cloudinaryService.uploadImage(image);
+
+    if (book.image) {
+      await this.cloudinaryService.destroyImage(book.image);
     }
-    book.set(omitBy({ image: cloudinaryImage.url, title: dto.title }, isNil));
+
+    let newImage;
+    if (image) {
+      newImage = await this.cloudinaryService.uploadImage(image);
+    }
+    book.set(omitBy({ image: newImage.url, title: dto.title }, isNil));
     await book.save();
+
     return book;
   }
 
