@@ -18,5 +18,5 @@ export class Author extends Model<Author, AuthorCreationAttrs> {
   lastName: string;
 
   @HasMany(() => Book)
-  book: Book[];
+  books: Book[];
 }
