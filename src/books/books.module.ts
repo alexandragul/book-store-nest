@@ -7,6 +7,7 @@ import { Book } from 'src/books/books.model';
 import { RolesModule } from 'src/roles/roles.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { AuthorsModule } from 'src/authors/authors.module';
 
 @Module({
   controllers: [BooksController],
@@ -17,6 +18,7 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
     RolesModule,
     AuthModule,
     CloudinaryModule,
+    AuthorsModule,
   ],
   exports: [BooksService],
 })

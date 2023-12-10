@@ -26,10 +26,14 @@ export class BooksController {
     return this.booksService.getBooks();
   }
 
-  @Post()
+  @Post('authors/:authorId')
   @UseInterceptors(FileInterceptor('image'))
-  createBook(@Body() dto: CreateBookDto, @UploadedFile() image) {
-    return this.booksService.createBook(dto, image);
+  createBook(
+    @Param('authorId') authorId: string,
+    @Body() dto: CreateBookDto,
+    @UploadedFile() image,
+  ) {
+    return this.booksService.createBook(Number(authorId), dto, image);
   }
 
   @Patch(':bookId')

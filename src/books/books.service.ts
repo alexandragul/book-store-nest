@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { omitBy, isNil } from 'lodash';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { Book } from 'src/books/books.model';
 import { FilesService } from 'src/files/files.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { AuthorsService } from 'src/authors/authors.service';
 
 @Injectable()
 export class BooksService {
@@ -12,6 +13,7 @@ export class BooksService {
     @InjectModel(Book) private bookRepository: typeof Book,
     private filesService: FilesService,
     private cloudinaryService: CloudinaryService,
+    private authorsService: AuthorsService,
   ) {}
 
   async getBooks() {
@@ -19,16 +21,24 @@ export class BooksService {
     return books;
   }
 
-  async createBook(dto: CreateBookDto, image: any) {
-    let cloudinaryImage;
+  async createBook(authorId: number, dto: CreateBookDto, image: any) {
+    let newImage;
     if (image) {
-      cloudinaryImage = await this.cloudinaryService.uploadImage(image);
+      newImage = await this.cloudinaryService.uploadImage(image);
     }
-    const book = await this.bookRepository.create({
-      ...dto,
-      ...(cloudinaryImage && { image: cloudinaryImage.url }),
-    });
-    return book;
+    const book = await this.bookRepository.create(omitBy({ ...dto, image: newImage.url }, isNil));
+
+    const author = await this.authorsService.getAuthorById(authorId);
+
+    if (!author) {
+      throw new HttpException('Author has not been found', HttpStatus.NOT_FOUND);
+    }
+
+    if (author && book) {
+      await author.$add('book', book.id);
+    }
+
+    return await this.bookRepository.findByPk(book.id);
   }
 
   async getBookById(bookId: number) {
@@ -56,5 +66,8 @@ export class BooksService {
   async deleteBookById(bookId: number) {
     const book = await this.bookRepository.findByPk(bookId);
     await book.destroy();
+    if (book.image) {
+      await this.cloudinaryService.destroyImage(book.image);
+    }
   }
 }
